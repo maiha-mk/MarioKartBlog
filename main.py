@@ -151,8 +151,8 @@ class Cog(commands.Cog):
     @commands.has_role("MKB")
     async def mshow(self, ctx: commands.Context):
         msg = ""
-        for i in self.host_dic[ctx.guild.id]:
-            msg += f"{i} : {self.host_dic[ctx.guild.id][i]}\n"
+        for i in range(len(self.host_dic[ctx.guild.id])):
+            msg += f"{f'{int(i)+1}'} : {self.host_dic[ctx.guild.id][f'{int(i)+1}']}\n"
         await ctx.send(f"```{msg}```")
 
     @commands.command()

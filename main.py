@@ -239,6 +239,7 @@ class Cog(commands.Cog):
                 await category.set_permissions(target=role_everyone, send_messages=False)
                 await category.set_permissions(target=role_mkb, send_messages=True)
                 await category.set_permissions(target=role_hosa, send_messages=True)
+                await category.set_permissions(target=role_shinkou, send_messages=True)
                 await ctx.send("`🟡試合結果を作成しました`")
 
             elif "杯" in category_name:

@@ -110,6 +110,25 @@ class Cog(commands.Cog):
         await msg.add_reaction(self.get_config(ctx.guild.id)["ReactRoleEmoji"])
 
     @commands.command()
+    @commands.has_any_role('MKB', 'STAFF')
+    @commands.guild_only()
+    async def f(self, ctx: commands.Context):
+        histories = [message async for message in ctx.channel.history(limit=None)]
+        with open(f"{ctx.channel.category.name}-{ctx.channel.name}.txt","w", encoding="utf-8") as f:
+            for message in histories:
+                if "!f" in message.content:
+                    continue
+                f.write(f"{message.content}\n\n")
+        dic = {"1回戦":"Round1", "2回戦":"Round2", "3回戦":"Round3", "4回戦":"Round4", "5回戦":"Round5", "6回戦":"Round6", "7回戦":"Round7", "準々決勝":"Quarter_final", "準決勝":"Semi_final", "決勝":"Final"}
+        with open(f"{dic[ctx.channel.name]}.txt","w", encoding="utf-8") as f:
+            f.truncate(0)
+            for message in histories:
+                if "!f" in message.content:
+                    continue
+                f.write(f"{message.content}\n\n")
+        await ctx.send(file=discord.File(fp=f"{dic[ctx.channel.name]}.txt"))
+
+    @commands.command()
     @commands.guild_only()
     @commands.has_role("MKB")
     async def y(self, ctx: commands.Context):

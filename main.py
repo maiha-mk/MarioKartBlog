@@ -119,7 +119,7 @@ class Cog(commands.Cog):
                 if "!f" in message.content:
                     continue
                 f.write(f"{message.content}\n\n")
-        dic = {"1回戦":"Round1", "2回戦":"Round2", "3回戦":"Round3", "4回戦":"Round4", "5回戦":"Round5", "6回戦":"Round6", "7回戦":"Round7", "準々決勝":"Quarter_final", "準決勝":"Semi_final", "決勝":"Final"}
+        dic = {"1回戦":"Round1","1回戦-試合結果":"Round1", "2回戦":"Round2","2回戦-試合結果":"Round2", "3回戦":"Round3", "3回戦-試合結果":"Round3", "4回戦":"Round4","4回戦-試合結果":"Round4", "5回戦":"Round5", "5回戦-試合結果":"Round5", "6回戦":"Round6", "7回戦":"Round7", "準々決勝":"Quarter_final","準々決勝-試合結果":"Quarter_final", "準決勝":"Semi_final","準決勝-試合結果":"Semi_final", "決勝":"Final", "決勝-試合結果":"Final"}
         with open(f"{dic[ctx.channel.name]}.txt","w", encoding="utf-8") as f:
             f.truncate(0)
             for message in histories:

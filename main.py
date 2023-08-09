@@ -392,6 +392,19 @@ class Cog(commands.Cog):
             return
         if message.author.bot:
             return
+        if message.channel.id == self.watching_channel_id:
+            # 提出状況メッセージを取得
+            status_channel = self.bot.get_channel(self.status_channel_id)  
+            status_message = await status_channel.fetch_message(self.status_message_id)
+            status_content = status_message.content
+
+            
+            group_match = re.search(r"(\d+)組", message.content)
+            if group_match:
+                stage = group_match.group(1) + "組"
+                if stage + ":x:" in status_content:
+                    status_content = status_content.replace(f"{stage}:x:", f"{stage}○")
+                    await status_message.edit(content=status_content)
         if self.data == []:
             return
         message.content = message.content.replace(" ", "")
@@ -415,21 +428,7 @@ class Cog(commands.Cog):
                 room = room.group().replace("room", "")
                 self.data[int(room)] = True
                 print(f"room: {room}\n message: {message.content}")
-                await self.update_message()
-
-        if message.channel.id == self.watching_channel_id:
-            # 提出状況メッセージを取得
-            status_channel = self.bot.get_channel(self.status_channel_id)  
-            status_message = await status_channel.fetch_message(self.status_message_id)
-            status_content = status_message.content
-
-            
-            group_match = re.search(r"(\d+)組", message.content)
-            if group_match:
-                stage = group_match.group(1) + "組"
-                if stage + ":x:" in status_content:
-                    status_content = status_content.replace(f"{stage}:x:", f"{stage}○")
-                    await status_message.edit(content=status_content)
+                await self.update_message()   
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):

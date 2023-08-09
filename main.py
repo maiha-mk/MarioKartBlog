@@ -36,6 +36,10 @@ class Cog(commands.Cog):
         self.host_dic = {}
         self.data = []
         self.latest_msg = None
+        self.watching_channel_id = None
+        self.status_channel_id = None
+        self.total_groups = None
+        self.status_message_id = None
 
     def get_config(self, guild_id):
         try:
@@ -71,6 +75,65 @@ class Cog(commands.Cog):
 
     async def update_message(self):
         await self.latest_msg.edit(content=f"{self.makemsg(self.data)}")
+
+    @commands.command(aliases=["r"])
+    @commands.guild_only()
+    @commands.has_role("MKB")
+    async def resultoperation(self, ctx, option: str, group_number: int=None):
+        if option == "true":
+        # 提出状況メッセージを取得
+            status_message = await ctx.channel.fetch_message(self.status_message_id)
+            status_content = status_message.content
+
+            group_str = f"{group_number}組"
+            if group_str + ":x:" in status_content:
+                status_content = status_content.replace(f"{group_str}:x:", f"{group_str}○")
+                await status_message.edit(content=status_content)
+                await ctx.send(f"{group_str}の結果が提出されたとして更新されました。")
+            else:
+                await ctx.send(f"{group_str}の結果は既に提出されているか、無効な組番号です。")
+
+        elif option == "false":
+        # 提出状況メッセージを取得
+            status_message = await ctx.channel.fetch_message(self.status_message_id)
+            status_content = status_message.content
+
+            group_str = f"{group_number}組"
+            if group_str + "○" in status_content:
+                status_content = status_content.replace(f"{group_str}○", f"{group_str}:x:")
+                await status_message.edit(content=status_content)
+                await ctx.send(f"{group_str}の結果が未提出に変更されました。")
+            else:
+                await ctx.send(f"{group_str}の結果は既に未提出です。")
+
+        elif option == "reset":
+        # 提出状況メッセージを初期化
+            content = "提出状況\n"
+            for i in range(1, self.total_groups + 1):
+                content += f"{i}組:x:\n"
+
+            status_message = await ctx.channel.fetch_message(self.status_message_id)
+            await status_message.edit(content=content)
+            await ctx.send("提出状況を初期化しました。")
+
+        else:
+            await ctx.send("無効なオプションです。`true`, `false`, `reset` のいずれかを使用してください。")
+
+    @commands.command(aliases=["rc"])
+    @commands.guild_only()
+    @commands.has_role("MKB")
+    async def resultcheck(self, ctx, channel_id: int, group_count: int):
+        self.watching_channel_id = channel_id
+        self.status_channel_id = ctx.channel.id  
+        self.total_groups = group_count
+
+        # 初期の提出状況メッセージを作成
+        content = "提出状況\n"
+        for i in range(1, group_count + 1):
+            content += f"{i}組:x:\n"
+
+        status_message = await ctx.send(content)
+        self.status_message_id = status_message.id
 
     @commands.command()
     @commands.guild_only()
@@ -353,6 +416,20 @@ class Cog(commands.Cog):
                 self.data[int(room)] = True
                 print(f"room: {room}\n message: {message.content}")
                 await self.update_message()
+
+        if message.channel.id == self.watching_channel_id:
+            # 提出状況メッセージを取得
+            status_channel = self.bot.get_channel(self.status_channel_id)  
+            status_message = await status_channel.fetch_message(self.status_message_id)
+            status_content = status_message.content
+
+            
+            group_match = re.search(r"(\d+)組", message.content)
+            if group_match:
+                stage = group_match.group(1) + "組"
+                if stage + ":x:" in status_content:
+                    status_content = status_content.replace(f"{stage}:x:", f"{stage}○")
+                    await status_message.edit(content=status_content)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):

@@ -119,6 +119,15 @@ class Cog(commands.Cog):
         else:
             await ctx.send("無効なオプションです。`true`, `false`, `reset` のいずれかを使用してください。")
 
+    @commands.command()
+    @commands.guild_only()
+    @commands.has_role("MKB")
+    async def lock(self, ctx: commands.Context):
+        role_everyone = discord.utils.get(ctx.guild.roles, name="@everyone")
+        await ctx.channel.set_permissions(target=role_everyone, send_messages=False)
+        channel: discord.TextChannel = await bot.get_channel(id=ctx.channel.id)
+        await channel.edit(name="未使用")
+
     @commands.command(aliases=["rc"])
     @commands.guild_only()
     @commands.has_role("MKB")
@@ -212,6 +221,7 @@ class Cog(commands.Cog):
     @commands.guild_only()
     @commands.has_role("MKB")
     async def mset(self, ctx: commands.Context):
+        await ctx.message.delete()
         host_dic = {}
         target_word1 = "組"
         target_word2 = "★進"

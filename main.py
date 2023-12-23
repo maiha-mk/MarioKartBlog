@@ -125,7 +125,7 @@ class Cog(commands.Cog):
     async def lock(self, ctx: commands.Context):
         role_everyone = discord.utils.get(ctx.guild.roles, name="@everyone")
         await ctx.channel.set_permissions(target=role_everyone, send_messages=False)
-        channel: discord.TextChannel = await bot.get_channel(id=ctx.channel.id)
+        channel: discord.TextChannel = bot.get_channel(ctx.channel.id)
         await channel.edit(name="未使用")
 
     @commands.command(aliases=["rc"])

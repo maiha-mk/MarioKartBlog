@@ -217,6 +217,38 @@ class Cog(commands.Cog):
         with open("advancement.txt", "w", encoding="utf-8") as writer:
             writer.write(value)
         await ctx.send(file=discord.File(fp="advancement.txt"))
+
+    @commands.command()
+    @commands.guild_only()
+    @commands.has_role("MKB")
+    async def tie(self, ctx: commands.Context):
+        target_word = "主催コピペ用"
+        histories = [message async for message in ctx.channel.history(limit=None)]
+        value_li = []
+        for msg in histories:
+            if target_word in msg.content:
+                
+                lines = data.splitlines()
+                separator = "--------------------------------------------"
+                index = lines.index(separator)
+                before_line = lines[index - 1]
+                after_line = lines[index + 1]
+
+                pts_pattern = r"(\d+)pts"
+                before_pts = re.search(pts_pattern, before_line).group(1)
+                after_pts = re.search(pts_pattern, after_line).group(1)
+
+                if before_pts == after_pts:
+                    round_pattern = r"(\d+)組"
+                    round_info = re.search(round_pattern, lines[0])
+                    group_number = round_info.group(1) 
+
+                    value_li.insert(0, f"{group_number}\n")
+                    
+        value = "".join(value_li)
+        with open("tie.txt", "w", encoding="utf-8") as writer:
+            writer.write(value)
+        await ctx.send("通過ライン前後で同点の組", file=discord.File(fp="tie.txt"))
     
     @commands.command()
     @commands.guild_only()

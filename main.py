@@ -228,7 +228,7 @@ class Cog(commands.Cog):
         for msg in histories:
             if target_word in msg.content:
                 
-                lines = data.splitlines()
+                lines = msg.content.splitlines()
                 separator = "--------------------------------------------"
                 index = lines.index(separator)
                 before_line = lines[index - 1]

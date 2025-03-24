@@ -379,7 +379,7 @@ class Cog(commands.Cog):
                 await channel.set_permissions(target=role_mkb, send_messages = True)
                 await channel.set_permissions(target=role_hosa, send_messages = True)
                 await category.create_text_channel(name="総合連絡用")
-                await category.create_text_channel(name="進行登録連絡用")
+                await category.create_text_channel(name="進行登録確認用")
                 await ctx.send(f"`🟡{category_name}を作成しました`")
 
             else:
